@@ -58,6 +58,7 @@ const SPAWN_POSITIONS = [
 ];
 
 function createPlayer(message) {
+
   console.log("CREATE PLAYER: ", message)
   let player = new Player(Players.length, message.data.nick, message.data.skin, SPAWN_POSITIONS[Math.floor(Math.random() * SPAWN_POSITIONS.length)]);
   console.log("PLAYER CREATED: ", player)
@@ -67,6 +68,10 @@ function createPlayer(message) {
 }
 
 function removePlayer(message) {
+  let duplicates = Players.filter(player => message.data.nick == player.nick);
+  duplicates.forEach(function (player) {
+    delete Players[player.id];
+  })
   let playerLeaved = {
     "action": "PLAYER_LEAVED",
     "data": {
@@ -77,7 +82,7 @@ function removePlayer(message) {
     "msg": ""
   }
   console.log("MESSAGE - playerLeaved:: ", playerLeaved);
-  delete Players[message.data.player_id];
+  client.broadcast.emit('message', playerLeaved);
 }
 
 function existsNick(nickPlayer) {
