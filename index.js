@@ -10,7 +10,8 @@ var port = process.env.PORT || 3000;
 
 var Players = [];
 
-function Player(id, nick, skin, position){
+class Player {
+  constructor(id, nick, skin, position) {
     this.id = id;
     this.nick = nick;
     this.skin = skin;
@@ -18,33 +19,32 @@ function Player(id, nick, skin, position){
     this.position = position;
     this.life = 100;
     this.kills = 0;
+  }
+  getId() {
+    return { id: this.id };
+  }
+  getNick() {
+    return { nick: this.nick };
+  }
+  getSkin() {
+    return { skin: this.skin };
+  }
+  getIndex() {
+    return { index: this.index };
+  }
+  getPosition() {
+    return { position: this.position };
+  }
+  getLife() {
+    return { life: this.life };
+  }
+  getKills() {
+    return { kills: this.kills };
+  }
 }
 
-Player.prototype = {
-    getId: function(){
-        return {id: this.id};
-    },
-    getNick: function(){
-      return {nick: this.nick};
-    },
-    getSkin: function(){
-      return {skin: this.skin};
-    },
-    getIndex: function(){
-      return {index: this.index};
-    },
-    getPosition: function(){
-      return {position: this.position};
-    },
-    getLife: function(){
-      return {life: this.life};
-    },
-    getKills: function(){
-      return {kills: this.kills};
-    }
-};
 
-const POSITIONS_BORN = [
+const SPAWN_POSITIONS = [
   {"x":12, "y": 14}, 
   {"x":17, "y": 27}, 
   {"x":20, "y": 33}, 
@@ -59,47 +59,47 @@ const POSITIONS_BORN = [
 
 function createPlayer(message) {
       console.log("CREATE PLAYER: ", message)
-      let player = new Player(Players.length, message.data.nick, message.data.skin, POSITIONS_BORN[Math.floor(Math.random() * POSITIONS_BORN.length)]);
+      let player = new Player(Players.length, message.data.nick, message.data.skin, SPAWN_POSITIONS[Math.floor(Math.random() * SPAWN_POSITIONS.length)]);
       console.log("PLAYER CREATED: ", player)
       Players.push(player);
-      console.log("PLAYERS DISPONÍVEIS: ", Players)
+      console.log("AVAILABLE PLAYERS: ", Players)
       return player;
 }
 
-function existeNick(nickPlayer) {
-  let lRetorno = false;
+function existsNick(nickPlayer) {
+  let lReturn = false;
   if(Players.length > 0) {
     Players.forEach(function(player) {
-      console.log("EXISTE O NICK? ", player.nick, nickPlayer)
+      console.log("DOES NICK EXIST? ", player.nick, nickPlayer)
       if(player.nick.toLowerCase() == nickPlayer.toLowerCase()) {
-        lRetorno = true;
+        lReturn = true;
         return;
       }
     })
   }
-  return lRetorno;
+  return lReturn;
 }
 
 io.on('connection', function(client) {
 
-  console.log("Cliente conectado:: ", client);
+  console.log("Connected Client:: ", client);
 
     client.on('message', function(message) {
 
       switch(message.action){
         case 'CREATE':
           let playerCreated = null;
-          if(!existeNick(message.data.nick)) {
+          // if(!existsNick(message.data.nick)) {
             playerCreated = createPlayer(message);
-          } else {
-            let error = {
-              "action":"CREATE",
-              "error": true,
-              "msg":"Nick de usuário já existe"
-            }
-            client.emit('message', error);
-            return;
-          }
+          // } else {
+          //   let error = {
+          //     "action":"CREATE",
+          //     "error": true,
+          //     "msg":"User nickname already exists"
+          //   }
+          //   client.emit('message', error);
+          //   return;
+          // }
 
           let player = {
             "action": "PLAYER_JOIN",
@@ -132,7 +132,7 @@ io.on('connection', function(client) {
             "error": false,
             "msg":""
           }
-          //Atualizando a posição do player
+          // Updating the player's position
           if(Players[message.data.player_id])
             Players[message.data.player_id].position = message.data.position;
             
