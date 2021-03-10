@@ -67,7 +67,8 @@ function createPlayer(message) {
 }
 
 function removePlayer(message) {
-  Players = Players.filter(player => message.data.nick != "Bemo");
+  // Players = Players.filter(player => message.data.nick != "Bemo");
+  delete Players[message.data.player_id];
 }
 
 function existsNick(nickPlayer) {
