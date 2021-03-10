@@ -67,7 +67,16 @@ function createPlayer(message) {
 }
 
 function removePlayer(message) {
-  // Players = Players.filter(player => message.data.nick != "Bemo");
+  let playerLeaved = {
+    "action": "PLAYER_LEAVED",
+    "data": {
+      "nick": message.data.nick,
+      "id": message.data.player_id,
+    },
+    "error": false,
+    "msg": ""
+  }
+  console.log("MESSAGE - playerLeaved:: ", playerLeaved);
   delete Players[message.data.player_id];
 }
 
