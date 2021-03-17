@@ -102,6 +102,7 @@ function existsNick(nickPlayer) {
 io.on('connection', function (client) {
 
   // console.log("Connected Client:: ", client);
+  console.log("*******************ROOM ID: " + socket.handshake.query.roomID + "*******************");
 
   //Get the roomID of the user and join in a room of the same roomID
   roomID = socket.handshake.query.roomID
@@ -130,19 +131,19 @@ io.on('connection', function (client) {
 
 
 
-  client.on("joinRoom", (roomId, username) => {
-    client.join(roomId);
-    io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
-    console.log("PLAYER JOINED: [ " + roomId + " | " + username + " ]");
-  });
+  // client.on("joinRoom", (roomId, username) => {
+  //   client.join(roomId);
+  //   io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
+  //   console.log("PLAYER JOINED: [ " + roomId + " | " + username + " ]");
+  // });
 
-  client.on(
-    "sendMessage",
-    (message, roomId, username) => {
-      io.to(roomId).emit("sendMessage", message, username);
-      console.log("MESSAGE: [ " + roomId + " | " + username + " ]==> " + message);
-    }
-  );
+  // client.on(
+  //   "sendMessage",
+  //   (message, roomId, username) => {
+  //     io.to(roomId).emit("sendMessage", message, username);
+  //     console.log("MESSAGE: [ " + roomId + " | " + username + " ]==> " + message);
+  //   }
+  // );
 
   client.on('message', function (message) {
 
