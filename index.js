@@ -99,7 +99,7 @@ function existsNick(nickPlayer) {
   return lReturn;
 }
 
-io.on('connection', function (socket) {
+io.on('connection', async function (socket) {
 
   // console.log("Connected socket:: ", socket);
 
@@ -107,12 +107,12 @@ io.on('connection', function (socket) {
 
     //join in a room of roomID
     socket.join(roomID);
-    socket.in(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " joined room");
+    io.to(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " joined room");
     console.log("PLAYER JOINED: [ " + roomID + " | " + nickname + " ]");
 
     //Leave the room if the user closes the socket
     socket.on('disconnect', () => {
-      socket.in(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " left");
+      io.to(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " left");
       socket.leave(roomID)
       console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
     });
