@@ -113,21 +113,23 @@ io.on('connection', async function (socket) {
     //Leave the room if the user closes the socket
     socket.on('disconnect', () => {
 
+      io.to(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " left");
+      socket.leave(roomID)
       console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
 
-      var p = Players.find(p => p.nick == nickname);
+      var player = Players.find(p => p.nick == nickname);
 
       let playerLeaved = {
         "action": "PLAYER_LEAVED",
         "data": {
           "nick": nickname,
-          "id": p.id,
+          "id": player.id,
         },
         "error": false,
         "msg": ""
       }
       socket.in(roomID).broadcast.emit('message', playerLeaved);
-      delete Players[p.id];
+      delete Players[player.id];
     });
 
     // Receive a message from socket in a particular room
