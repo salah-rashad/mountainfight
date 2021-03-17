@@ -101,7 +101,7 @@ function existsNick(nickPlayer) {
 
 io.on('connection', function (client) {
 
-  console.log("Connected Client:: ", client);
+  // console.log("Connected Client:: ", client);
 
   client.on("joinRoom", (roomId, username) => {
     client.join(roomId);
