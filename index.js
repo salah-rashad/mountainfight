@@ -85,19 +85,19 @@ function createPlayer(message) {
 
 // }
 
-function existsNick(nickPlayer) {
-  let lReturn = false;
-  if (Players.length > 0) {
-    Players.forEach(function (player) {
-      console.log("DOES NICK EXIST? ", player.nick, nickPlayer)
-      if (player.nick.toLowerCase() == nickPlayer.toLowerCase()) {
-        lReturn = true;
-        return;
-      }
-    })
-  }
-  return lReturn;
-}
+// function existsNick(nickPlayer) {
+//   let lReturn = false;
+//   if (Players.length > 0) {
+//     Players.forEach(function (player) {
+//       console.log("DOES NICK EXIST? ", player.nick, nickPlayer)
+//       if (player.nick.toLowerCase() == nickPlayer.toLowerCase()) {
+//         lReturn = true;
+//         return;
+//       }
+//     })
+//   }
+//   return lReturn;
+// }
 
 io.on('connection', async function (socket) {
 
@@ -115,6 +115,8 @@ io.on('connection', async function (socket) {
       io.to(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " left");
       socket.leave(roomID)
       console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
+      socket.in(message.room).broadcast.emit('message', playerLeaved);
+      delete Players[message.data.player_id];
     });
 
     // Receive a message from socket in a particular room
