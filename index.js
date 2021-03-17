@@ -103,6 +103,33 @@ io.on('connection', function (client) {
 
   // console.log("Connected Client:: ", client);
 
+  //Get the roomID of the user and join in a room of the same roomID
+  roomID = socket.handshake.query.roomID
+  socket.join(roomID);
+
+  client.on("JOIN_ROOM", (room, nickname) => {
+    socket.in(room).emit("SEND_MESSAGE", nickname + " joined room.");
+
+    console.log("PLAYER JOINED: [ " + room + " | " + nickname + " ]");
+  });
+
+  //Leave the room if the user closes the socket
+  socket.on('disconnect', () => {
+    socket.leave(roomID)
+  });
+
+  // Receive a message from client in a particular room
+  socket.on('SEND_MESSAGE', (room, nickname, content) => {
+    //Send message to only that particular room
+    socket.in(room).emit('RECEIVE_MESSAGE', (room, nickname, content));
+
+    console.log("MESSAGE: [ " + room + " | " + nickname + " ]==> " + content);
+  })
+
+
+
+
+
   client.on("joinRoom", (roomId, username) => {
     client.join(roomId);
     io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
