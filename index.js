@@ -60,7 +60,7 @@ const SPAWN_POSITIONS = [
 function createPlayer(message) {
   console.log("CREATE PLAYER: ", message)
   let player = new Player(Players.length, message.data.nick, message.data.skin, SPAWN_POSITIONS[Math.floor(Math.random() * SPAWN_POSITIONS.length)]);
-  console.log("PLAYER CREATED: ", player)
+  console.log("PLAYER CREATED: ", player.nick)
   Players.push(player);
   console.log("AVAILABLE PLAYERS: ", Players)
   return player;
@@ -158,7 +158,7 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        io.to(roomID).emit('message', player);
+        io.to(message.data.room).emit('message', player);
         playerCreated = null;
         break;
 
