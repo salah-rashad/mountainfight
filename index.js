@@ -110,23 +110,25 @@ io.on('connection', async function (socket) {
     io.to(roomID).emit("RECEIVE_MESSAGE", "[" + nickname + "]" + " joined room");
     console.log("PLAYER JOINED: [ " + roomID + " | " + nickname + " ]");
 
-    // //Leave the room if the user closes the socket
-    // socket.on('disconnect', () => {
-      
-    //   console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
+    //Leave the room if the user closes the socket
+    socket.on('disconnect', () => {
 
-    //   // let playerLeaved = {
-    //   //   "action": "PLAYER_LEAVED",
-    //   //   "data": {
-    //   //     "nick": message.data.nick,
-    //   //     "id": message.data.player_id,
-    //   //   },
-    //   //   "error": false,
-    //   //   "msg": ""
-    //   // }
-    //   // socket.in(roomID).broadcast.emit('message', playerLeaved);
-    //   delete Players[message.data.player_id];
-    // });
+      console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
+
+      var p = Players.find(p => p.nick == nickname);
+
+      let playerLeaved = {
+        "action": "PLAYER_LEAVED",
+        "data": {
+          "nick": nickname,
+          "id": p.id,
+        },
+        "error": false,
+        "msg": ""
+      }
+      socket.in(roomID).broadcast.emit('message', playerLeaved);
+      delete Players[p.id];
+    });
 
     // Receive a message from socket in a particular room
     socket.on('SEND_MESSAGE', (room, nickname, content) => {
@@ -232,30 +234,30 @@ io.on('connection', async function (socket) {
         break;
     }
 
-    // User Disconnected
-    socket.on('disconnect', function (connection) {
-      console.log('DISCONNECT: ', connection);
-      let playerLeaved = {
-        "action": "PLAYER_LEAVED",
-        "data": {
-          "nick": message.data.nick,
-          "id": message.data.player_id,
-        },
-        "error": false,
-        "msg": ""
-      }
-      
-
-
-      io.to(message.room).emit("RECEIVE_MESSAGE", "[" + message.data.nick + "]" + " left");
-      socket.leave(message.room)
+    // // User Disconnected
+    // socket.on('disconnect', function (connection) {
+    //   console.log('DISCONNECT: ', connection);
+    //   let playerLeaved = {
+    //     "action": "PLAYER_LEAVED",
+    //     "data": {
+    //       "nick": message.data.nick,
+    //       "id": message.data.player_id,
+    //     },
+    //     "error": false,
+    //     "msg": ""
+    //   }
 
 
 
-      console.log("PLAYER LEAVED [" + message.data.nick + "]: ", "ROOM-ID: " + message.room);
-      socket.in(message.room).broadcast.emit('message', playerLeaved);
-      delete Players[message.data.player_id];
-    });
+    //   io.to(message.room).emit("RECEIVE_MESSAGE", "[" + message.data.nick + "]" + " left");
+    //   socket.leave(message.room)
+
+
+
+    //   console.log("PLAYER LEAVED [" + message.data.nick + "]: ", "ROOM-ID: " + message.room);
+    //   socket.in(message.room).broadcast.emit('message', playerLeaved);
+    //   delete Players[message.data.player_id];
+    // });
 
   });
 
