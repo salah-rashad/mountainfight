@@ -142,7 +142,7 @@ io.on('connection', async function (socket) {
             "error": true,
             "msg": "User nickname already exists"
           }
-          socket.in(message.data.room).emit('message', error);
+          socket.in(message.room).emit('message', error);
           playerCreated = createPlayer(message);
         }
 
@@ -158,7 +158,7 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        io.to(message.data.room).emit('message', player);
+        io.to(message.room).emit('message', player);
         playerCreated = null;
         break;
 
@@ -182,8 +182,8 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id])
           Players[message.data.player_id].position = message.data.position;
 
-        console.log("PLAYER MOVE [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
-        socket.in(message.data.room).broadcast.emit('message', playerMove);
+        console.log("PLAYER MOVE [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+        socket.in(message.room).broadcast.emit('message', playerMove);
         break;
 
       //* ******************* *//
@@ -202,8 +202,8 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        console.log("PLAYER ATTACK [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
-        socket.in(message.data.room).broadcast.emit('message', playerAttack);
+        console.log("PLAYER ATTACK [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+        socket.in(message.room).broadcast.emit('message', playerAttack);
         break;
 
       //* ******************* *//
@@ -225,8 +225,8 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id].life <= 0)
           Players[message.data.player_id_attack].kills += 1;
 
-          console.log("PLAYER DAMAGE [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
-        socket.in(message.data.room).broadcast.emit('message', playerDamage);
+          console.log("PLAYER DAMAGE [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+        socket.in(message.room).broadcast.emit('message', playerDamage);
         break;
     }
 
@@ -242,8 +242,8 @@ io.on('connection', async function (socket) {
         "error": false,
         "msg": ""
       }
-      console.log("PLAYER LEAVED [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
-      socket.in(message.data.room).broadcast.emit('message', playerLeaved);
+      console.log("PLAYER LEAVED [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+      socket.in(message.room).broadcast.emit('message', playerLeaved);
       delete Players[message.data.player_id];
     });
 
