@@ -46,15 +46,15 @@ class Player {
 
 const SPAWN_POSITIONS = [
   { "x": 12, "y": 14 },
-  { "x": 17, "y": 27 },
-  { "x": 20, "y": 33 },
-  { "x": 30, "y": 29 },
-  { "x": 52, "y": 29 },
-  { "x": 60, "y": 7 },
-  { "x": 58, "y": 18 },
-  { "x": 38, "y": 8 },
-  { "x": 40, "y": 15 },
-  { "x": 44, "y": 21 },
+  { "x": 13, "y": 14 },
+  { "x": 14, "y": 14 },
+  { "x": 15, "y": 14 },
+  // { "x": 52, "y": 29 },
+  // { "x": 60, "y": 7 },
+  // { "x": 58, "y": 18 },
+  // { "x": 38, "y": 8 },
+  // { "x": 40, "y": 15 },
+  // { "x": 44, "y": 21 },
 ];
 
 function createPlayer(message) {
@@ -83,7 +83,6 @@ function removePlayer(message) {
     client.broadcast.emit('message', playerLeaved);
   })
 
-  
 }
 
 function existsNick(nickPlayer) {
@@ -104,9 +103,24 @@ io.on('connection', function (client) {
 
   console.log("Connected Client:: ", client);
 
+  client.on("joinRoom", (roomId, username) => {
+    client.join(roomId);
+    io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
+  });
+
+  client.on(
+    "sendMessage",
+    (message, roomId, username) => {
+      io.to(roomId).emit("sendMessage", message, username);
+    }
+  );
+
   client.on('message', function (message) {
 
+
     switch (message.action) {
+
+      //* ******************* *//
       case 'CREATE':
         let playerCreated = null;
         if (!existsNick(message.data.nick)) {
@@ -138,6 +152,7 @@ io.on('connection', function (client) {
         playerCreated = null;
         break;
 
+      //* ******************* *//
       case 'MOVE':
         let playerMove = {
           "action": "MOVE",
@@ -161,6 +176,7 @@ io.on('connection', function (client) {
         client.broadcast.emit('message', playerMove);
         break;
 
+      //* ******************* *//
       case 'ATTACK':
         let playerAttack = {
           "action": "ATTACK",
@@ -180,6 +196,7 @@ io.on('connection', function (client) {
         client.broadcast.emit('message', playerAttack);
         break;
 
+      //* ******************* *//
       case 'RECEIVED_DAMAGE':
         let playerDamage = {
           "action": "RECEIVED_DAMAGE",
@@ -203,7 +220,7 @@ io.on('connection', function (client) {
         break;
     }
 
-    // user disconnected
+    // User Disconnected
     client.on('disconnect', function (connection) {
       console.log('DISCONNECT: ', connection);
       let playerLeaved = {
@@ -222,6 +239,8 @@ io.on('connection', function (client) {
     });
 
   });
+
+  
 
 });
 

@@ -1,7 +1,7 @@
 {
-  "name": "mountainfight",
+  "name": "heist-squad",
   "version": "0.0.1",
-  "description": " Mountain fight Game",
+  "description": "Heist Squad Game",
   "dependencies": {
     "bufferutil": "^4.0.1",
     "express": "^4.17.1",
