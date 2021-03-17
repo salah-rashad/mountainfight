@@ -103,30 +103,27 @@ io.on('connection', function (socket) {
 
   // console.log("Connected socket:: ", socket);
 
-  console.log("*******************ROOM ID: " + socket.handshake.query.roomID + "*******************");
-
-  //Get the roomID of the user and join in a room of the same roomID
-  roomID = socket.handshake.query.roomID
-  socket.join(roomID);
-
-  socket.on("JOIN_ROOM", (room, nickname) => {
-    socket.in(room).emit("SEND_MESSAGE", nickname + " joined room.");
-
+  socket.on("JOIN_ROOM", (roomID, nickname) => {
+    //join in a room of roomID
+    socket.join(roomID);
+    socket.in(roomID).emit("SEND_MESSAGE", nickname + " joined room.");
     console.log("PLAYER JOINED: [ " + room + " | " + nickname + " ]");
+
+    //Leave the room if the user closes the socket
+    socket.on('disconnect', () => {
+      socket.leave(roomID)
+      console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
+    });
+
+    // Receive a message from socket in a particular room
+    socket.on('SEND_MESSAGE', (room, nickname, content) => {
+      //Send message to only that particular room
+      socket.in(room).emit('RECEIVE_MESSAGE', (room, nickname, content));
+      console.log("MESSAGE: [ " + room + " | " + nickname + " ]==> " + content);
+    })
   });
 
-  //Leave the room if the user closes the socket
-  socket.on('disconnect', () => {
-    socket.leave(roomID)
-  });
 
-  // Receive a message from socket in a particular room
-  socket.on('SEND_MESSAGE', (room, nickname, content) => {
-    //Send message to only that particular room
-    socket.in(room).emit('RECEIVE_MESSAGE', (room, nickname, content));
-
-    console.log("MESSAGE: [ " + room + " | " + nickname + " ]==> " + content);
-  })
 
 
 
