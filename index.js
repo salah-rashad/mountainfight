@@ -134,7 +134,7 @@ io.on('connection', async function (socket) {
 
       //* ******************* *//
       case 'CREATE':
-        if (!existsNick(message.data.nick)) {
+        
           let playerCreated = createPlayer(message);
 
           let player = {
@@ -152,7 +152,7 @@ io.on('connection', async function (socket) {
           io.to(message.room).emit('message', player);
           playerCreated = null;
 
-        }
+        
         break;
 
       //* ******************* *//
