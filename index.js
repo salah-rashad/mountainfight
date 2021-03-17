@@ -66,24 +66,24 @@ function createPlayer(message) {
   return player;
 }
 
-function removePlayer(message) {
-  let duplicates = Players.filter(player => message.data.nick == player.nick);
-  duplicates.forEach(function (player) {
-    delete Players[player.id];
-    let playerLeaved = {
-      "action": "PLAYER_LEAVED",
-      "data": {
-        "nick": player.nick,
-        "id": player.id,
-      },
-      "error": false,
-      "msg": ""
-    }
-    console.log("MESSAGE - playerLeaved:: ", playerLeaved);
-    socket.broadcast.emit('message', playerLeaved);
-  })
+// function removePlayer(message) {
+//   let duplicates = Players.filter(player => message.data.nick == player.nick);
+//   duplicates.forEach(function (player) {
+//     delete Players[player.id];
+//     let playerLeaved = {
+//       "action": "PLAYER_LEAVED",
+//       "data": {
+//         "nick": player.nick,
+//         "id": player.id,
+//       },
+//       "error": false,
+//       "msg": ""
+//     }
+//     console.log("MESSAGE - playerLeaved:: ", playerLeaved);
+//     socket.broadcast.emit('message', playerLeaved);
+//   })
 
-}
+// }
 
 function existsNick(nickPlayer) {
   let lReturn = false;
@@ -126,25 +126,6 @@ io.on('connection', async function (socket) {
   });
 
 
-
-
-
-
-
-  // socket.on("joinRoom", (roomId, username) => {
-  //   socket.join(roomId);
-  //   io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
-  //   console.log("PLAYER JOINED: [ " + roomId + " | " + username + " ]");
-  // });
-
-  // socket.on(
-  //   "sendMessage",
-  //   (message, roomId, username) => {
-  //     io.to(roomId).emit("sendMessage", message, username);
-  //     console.log("MESSAGE: [ " + roomId + " | " + username + " ]==> " + message);
-  //   }
-  // );
-
   socket.on('message', function (message) {
 
 
@@ -161,8 +142,7 @@ io.on('connection', async function (socket) {
             "error": true,
             "msg": "User nickname already exists"
           }
-          socket.emit('message', error);
-          removePlayer(message)
+          socket.in(message.data.room).emit('message', error);
           playerCreated = createPlayer(message);
         }
 
@@ -178,7 +158,7 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        io.emit('message', player);
+        io.to(roomID).emit('message', player);
         playerCreated = null;
         break;
 
@@ -202,8 +182,8 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id])
           Players[message.data.player_id].position = message.data.position;
 
-        console.log("PLAYER MOVE TO: ", playerMove);
-        socket.broadcast.emit('message', playerMove);
+        console.log("PLAYER MOVE [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
+        socket.in(message.data.room).broadcast.emit('message', playerMove);
         break;
 
       //* ******************* *//
@@ -222,8 +202,8 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        console.log("PLAYER ATTACK: ", playerAttack);
-        socket.broadcast.emit('message', playerAttack);
+        console.log("PLAYER ATTACK [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
+        socket.in(message.data.room).broadcast.emit('message', playerAttack);
         break;
 
       //* ******************* *//
@@ -245,8 +225,8 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id].life <= 0)
           Players[message.data.player_id_attack].kills += 1;
 
-        console.log("PLAYER DAMAGE: ", playerDamage);
-        socket.broadcast.emit('message', playerDamage);
+          console.log("PLAYER DAMAGE [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
+        socket.in(message.data.room).broadcast.emit('message', playerDamage);
         break;
     }
 
@@ -262,10 +242,9 @@ io.on('connection', async function (socket) {
         "error": false,
         "msg": ""
       }
-      console.log("MESSAGE - playerLeaved:: ", playerLeaved);
-      socket.broadcast.emit('message', playerLeaved);
+      console.log("PLAYER LEAVED [" + message.data.nick +"]: ", "ROOM-ID: " + message.data.room);
+      socket.in(message.data.room).broadcast.emit('message', playerLeaved);
       delete Players[message.data.player_id];
-
     });
 
   });
