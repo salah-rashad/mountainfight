@@ -128,6 +128,7 @@ io.on('connection', async function (socket) {
 
   socket.on('message', function (message) {
 
+    console.log("********MESSAGE********", message);
 
     switch (message.action) {
 
