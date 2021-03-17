@@ -103,6 +103,8 @@ io.on('connection', async function (socket) {
 
   // console.log("Connected socket:: ", socket);
 
+  let p_id = 9999999;
+
   socket.on("JOIN_ROOM", (roomID, nickname) => {
 
     //join in a room of roomID
@@ -117,19 +119,19 @@ io.on('connection', async function (socket) {
       socket.leave(roomID)
       console.log("PLAYER LEAVED: [ " + roomID + " | " + nickname + " ]");
 
-      var player = Players.find(p => p.nick == nickname);
+      
 
       let playerLeaved = {
         "action": "PLAYER_LEAVED",
         "data": {
           "nick": nickname,
-          "id": player.id,
+          "id": p_id,
         },
         "error": false,
         "msg": ""
       }
       socket.in(roomID).broadcast.emit('message', playerLeaved);
-      delete Players[player.id];
+      delete Players[p_id];
     });
 
     // Receive a message from socket in a particular room
@@ -162,6 +164,8 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
+
+        p_id = player.data.id;
         io.to(message.room).emit('message', player);
         playerCreated = null;
 
