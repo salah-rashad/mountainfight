@@ -80,7 +80,7 @@ function removePlayer(message) {
       "msg": ""
     }
     console.log("MESSAGE - playerLeaved:: ", playerLeaved);
-    client.broadcast.emit('message', playerLeaved);
+    socket.broadcast.emit('message', playerLeaved);
   })
 
 }
@@ -101,8 +101,8 @@ function existsNick(nickPlayer) {
 
 io.on('connection', function (socket) {
 
-  // console.log("Connected Client:: ", socket);
-  
+  // console.log("Connected socket:: ", socket);
+
   console.log("*******************ROOM ID: " + socket.handshake.query.roomID + "*******************");
 
   //Get the roomID of the user and join in a room of the same roomID
@@ -120,7 +120,7 @@ io.on('connection', function (socket) {
     socket.leave(roomID)
   });
 
-  // Receive a message from client in a particular room
+  // Receive a message from socket in a particular room
   socket.on('SEND_MESSAGE', (room, nickname, content) => {
     //Send message to only that particular room
     socket.in(room).emit('RECEIVE_MESSAGE', (room, nickname, content));
@@ -132,13 +132,13 @@ io.on('connection', function (socket) {
 
 
 
-  // client.on("joinRoom", (roomId, username) => {
-  //   client.join(roomId);
+  // socket.on("joinRoom", (roomId, username) => {
+  //   socket.join(roomId);
   //   io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
   //   console.log("PLAYER JOINED: [ " + roomId + " | " + username + " ]");
   // });
 
-  // client.on(
+  // socket.on(
   //   "sendMessage",
   //   (message, roomId, username) => {
   //     io.to(roomId).emit("sendMessage", message, username);
@@ -146,7 +146,7 @@ io.on('connection', function (socket) {
   //   }
   // );
 
-  client.on('message', function (message) {
+  socket.on('message', function (message) {
 
 
     switch (message.action) {
@@ -162,7 +162,7 @@ io.on('connection', function (socket) {
             "error": true,
             "msg": "User nickname already exists"
           }
-          client.emit('message', error);
+          socket.emit('message', error);
           removePlayer(message)
           playerCreated = createPlayer(message);
         }
@@ -204,7 +204,7 @@ io.on('connection', function (socket) {
           Players[message.data.player_id].position = message.data.position;
 
         console.log("PLAYER MOVE TO: ", playerMove);
-        client.broadcast.emit('message', playerMove);
+        socket.broadcast.emit('message', playerMove);
         break;
 
       //* ******************* *//
@@ -224,7 +224,7 @@ io.on('connection', function (socket) {
           "msg": ""
         }
         console.log("PLAYER ATTACK: ", playerAttack);
-        client.broadcast.emit('message', playerAttack);
+        socket.broadcast.emit('message', playerAttack);
         break;
 
       //* ******************* *//
@@ -247,12 +247,12 @@ io.on('connection', function (socket) {
           Players[message.data.player_id_attack].kills += 1;
 
         console.log("PLAYER DAMAGE: ", playerDamage);
-        client.broadcast.emit('message', playerDamage);
+        socket.broadcast.emit('message', playerDamage);
         break;
     }
 
     // User Disconnected
-    client.on('disconnect', function (connection) {
+    socket.on('disconnect', function (connection) {
       console.log('DISCONNECT: ', connection);
       let playerLeaved = {
         "action": "PLAYER_LEAVED",
@@ -264,7 +264,7 @@ io.on('connection', function (socket) {
         "msg": ""
       }
       console.log("MESSAGE - playerLeaved:: ", playerLeaved);
-      client.broadcast.emit('message', playerLeaved);
+      socket.broadcast.emit('message', playerLeaved);
       delete Players[message.data.player_id];
 
     });
