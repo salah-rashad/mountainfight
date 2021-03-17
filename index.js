@@ -99,16 +99,17 @@ function existsNick(nickPlayer) {
   return lReturn;
 }
 
-io.on('connection', function (client) {
+io.on('connection', function (socket) {
 
-  // console.log("Connected Client:: ", client);
+  // console.log("Connected Client:: ", socket);
+  
   console.log("*******************ROOM ID: " + socket.handshake.query.roomID + "*******************");
 
   //Get the roomID of the user and join in a room of the same roomID
   roomID = socket.handshake.query.roomID
   socket.join(roomID);
 
-  client.on("JOIN_ROOM", (room, nickname) => {
+  socket.on("JOIN_ROOM", (room, nickname) => {
     socket.in(room).emit("SEND_MESSAGE", nickname + " joined room.");
 
     console.log("PLAYER JOINED: [ " + room + " | " + nickname + " ]");
