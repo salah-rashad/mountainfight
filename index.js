@@ -104,6 +104,7 @@ io.on('connection', function (socket) {
   // console.log("Connected socket:: ", socket);
 
   socket.on("JOIN_ROOM", (roomID, nickname) => {
+
     //join in a room of roomID
     socket.join(roomID);
     socket.in(roomID).emit("SEND_MESSAGE", nickname + " joined room.");
@@ -118,7 +119,7 @@ io.on('connection', function (socket) {
     // Receive a message from socket in a particular room
     socket.on('SEND_MESSAGE', (room, nickname, content) => {
       //Send message to only that particular room
-      socket.in(room).emit('RECEIVE_MESSAGE', (room, nickname, content));
+      socket.in(room).emit('RECEIVE_MESSAGE', room, nickname, content);
       console.log("MESSAGE: [ " + room + " | " + nickname + " ]==> " + content);
     })
   });
