@@ -132,33 +132,25 @@ io.on('connection', async function (socket) {
 
       //* ******************* *//
       case 'CREATE':
-        let playerCreated = null;
         if (!existsNick(message.data.nick)) {
-          playerCreated = createPlayer(message);
-        } else {
-          let error = {
-            "action": "CREATE",
-            "error": true,
-            "msg": "User nickname already exists"
-          }
-          socket.in(message.room).emit('message', error);
-          playerCreated = createPlayer(message);
-        }
+          let playerCreated = createPlayer(message);
 
-        let player = {
-          "action": "PLAYER_JOIN",
-          "data": {
-            "nick": playerCreated.nick,
-            "skin": playerCreated.skin,
-            "id": playerCreated.id,
-            "position": playerCreated.position,
-            "playersON": Players
-          },
-          "error": false,
-          "msg": ""
+          let player = {
+            "action": "PLAYER_JOIN",
+            "data": {
+              "nick": playerCreated.nick,
+              "skin": playerCreated.skin,
+              "id": playerCreated.id,
+              "position": playerCreated.position,
+              "playersON": Players
+            },
+            "error": false,
+            "msg": ""
+          }
+          io.to(message.room).emit('message', player);
+          playerCreated = null;
+
         }
-        io.to(message.room).emit('message', player);
-        playerCreated = null;
         break;
 
       //* ******************* *//
@@ -181,7 +173,7 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id])
           Players[message.data.player_id].position = message.data.position;
 
-        console.log("PLAYER MOVE [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
+        console.log("PLAYER MOVE [" + Players[message.data.player_id].nick + "]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerMove);
         break;
 
@@ -201,7 +193,7 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        console.log("PLAYER ATTACK [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
+        console.log("PLAYER ATTACK [" + Players[message.data.player_id].nick + "]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerAttack);
         break;
 
@@ -224,27 +216,27 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id].life <= 0)
           Players[message.data.player_id_attack].kills += 1;
 
-          console.log("PLAYER DAMAGE [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
+        console.log("PLAYER DAMAGE [" + Players[message.data.player_id].nick + "]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerDamage);
         break;
     }
 
-    // User Disconnected
-    socket.on('disconnect', function (connection) {
-      console.log('DISCONNECT: ', connection);
-      let playerLeaved = {
-        "action": "PLAYER_LEAVED",
-        "data": {
-          "nick": message.data.nick,
-          "id": message.data.player_id,
-        },
-        "error": false,
-        "msg": ""
-      }
-      console.log("PLAYER LEAVED [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
-      socket.in(message.room).broadcast.emit('message', playerLeaved);
-      delete Players[message.data.player_id];
-    });
+    // // User Disconnected
+    // socket.on('disconnect', function (connection) {
+    //   console.log('DISCONNECT: ', connection);
+    //   let playerLeaved = {
+    //     "action": "PLAYER_LEAVED",
+    //     "data": {
+    //       "nick": message.data.nick,
+    //       "id": message.data.player_id,
+    //     },
+    //     "error": false,
+    //     "msg": ""
+    //   }
+    //   console.log("PLAYER LEAVED [" + message.data.nick + "]: ", "ROOM-ID: " + message.room);
+    //   socket.in(message.room).broadcast.emit('message', playerLeaved);
+    //   delete Players[message.data.player_id];
+    // });
 
   });
 
