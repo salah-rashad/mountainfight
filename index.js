@@ -107,7 +107,7 @@ io.on('connection', function (socket) {
     //join in a room of roomID
     socket.join(roomID);
     socket.in(roomID).emit("SEND_MESSAGE", nickname + " joined room.");
-    console.log("PLAYER JOINED: [ " + room + " | " + nickname + " ]");
+    console.log("PLAYER JOINED: [ " + roomID + " | " + nickname + " ]");
 
     //Leave the room if the user closes the socket
     socket.on('disconnect', () => {
