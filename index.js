@@ -128,8 +128,6 @@ io.on('connection', async function (socket) {
 
   socket.on('message', function (message) {
 
-    console.log("********MESSAGE********", message);
-
     switch (message.action) {
 
       //* ******************* *//
@@ -183,7 +181,7 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id])
           Players[message.data.player_id].position = message.data.position;
 
-        console.log("PLAYER MOVE [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+        console.log("PLAYER MOVE [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerMove);
         break;
 
@@ -203,7 +201,7 @@ io.on('connection', async function (socket) {
           "error": false,
           "msg": ""
         }
-        console.log("PLAYER ATTACK [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+        console.log("PLAYER ATTACK [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerAttack);
         break;
 
@@ -226,7 +224,7 @@ io.on('connection', async function (socket) {
         if (Players[message.data.player_id].life <= 0)
           Players[message.data.player_id_attack].kills += 1;
 
-          console.log("PLAYER DAMAGE [" + message.data.nick +"]: ", "ROOM-ID: " + message.room);
+          console.log("PLAYER DAMAGE [" + Players[message.data.player_id].nick +"]: ", "ROOM-ID: " + message.room);
         socket.in(message.room).broadcast.emit('message', playerDamage);
         break;
     }
