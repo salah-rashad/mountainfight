@@ -106,12 +106,14 @@ io.on('connection', function (client) {
   client.on("joinRoom", (roomId, username) => {
     client.join(roomId);
     io.to(roomId).emit("sendMessage", username + " joined room " + roomId);
+    console.log("PLAYER JOINED: [ " + roomId + " | " + username + " ]");
   });
 
   client.on(
     "sendMessage",
     (message, roomId, username) => {
       io.to(roomId).emit("sendMessage", message, username);
+      console.log("MESSAGE: [ " + roomId + " | " + username + " ]==> " + message);
     }
   );
 
@@ -240,7 +242,7 @@ io.on('connection', function (client) {
 
   });
 
-  
+
 
 });
 
